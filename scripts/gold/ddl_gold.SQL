@@ -17,25 +17,25 @@ Usage:
 --- ===================================================================
 --- Create Dimension: gold.dim_customers
 --- ===================================================================
-CREATE VIEW gold.dim_customers AS
-SELECT
-	ROW_NUMBER() OVER(order by cst_id) AS customer_key,
-	ci.cst_id AS customer_id,
-	ci.cst_key AS customer_number,
-	ci.cst_firstname AS first_name,
-	ci.cst_lastname AS last_name,
-	ci.cst_marital_status AS marital_status,
-		CASE WHEN ci.cst_gndr != 'n/a' THEN ci.cst_gndr
-		 ELSE LOWER(COALESCE(ca.GEN, 'n/a'))
-	END AS new_gender,										--- CRM is the master
-	ca.BDATE AS birth_date,
-	la.CNTRY AS country,
-	ci.cst_create_date AS create_date
-FROM silver.crm_cust_info ci
-LEFT JOIN silver.erp_cust_az12 ca
-ON		  ci.cst_key = ca.CID
-LEFT JOIN silver.erp_loc_a101 la
-ON		  ci.cst_key = la.CID
+CREATE VIEW gold.dim_customers AS 
+SELECT 
+		ROW_NUMBER() OVER (ORDER BY cst_id) AS customer_key,
+		ci.cst_id AS customer_id,
+		ci.cst_key AS customer_number,
+		ci.cst_firstname AS first_name,
+		ci.cst_lastname AS last_name,
+		la.CNTRY AS country,
+		UPPER(LEFT(ci.cst_marital_status, 1)) + SUBSTRING(ci.cst_marital_status, 2, LEN(ci.cst_marital_status)) AS marital_status,
+		CASE WHEN ci.cst_gndr != 'n/a' THEN UPPER(LEFT(ci.cst_gndr, 1)) + SUBSTRING(ci.cst_gndr, 2, LEN(ci.cst_gndr))
+		ELSE LEFT(GEN, 1) + LOWER(SUBSTRING(GEN, 2, LEN(GEN)))
+		END gender,
+		ca.BDATE AS birthdate,
+		ci.cst_create_date AS create_date
+	FROM silver.crm_cust_info ci
+	LEFT JOIN silver.erp_cust_az12 ca
+	ON ci.cst_key = ca.CID
+	LEFT JOIN silver.erp_loc_a101 la
+	ON ci.cst_key = la.CID
 
 --- ===================================================================
 --- Create Dimension: gold.dim_products
