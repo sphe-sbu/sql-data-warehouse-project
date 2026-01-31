@@ -21,7 +21,7 @@ Develop a modern data warehouse using SQL Server to consolidate sales data, enab
 
 ---
 
-### BI: ANALYTICS AND REPORTING (DATA ANALYTICS)
+### BI: ANALYTICS AND REPORTING (DATA ANALYTICS)  <<>> **PENDING...**
 
 #### OBJECTIVES 
 Develop SQL based analytics to deliver detailed insights into:
